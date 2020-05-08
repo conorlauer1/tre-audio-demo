@@ -1,14 +1,24 @@
-//requires
+// requires
 const express = require('express');
 const app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-//load env variables
+var clientAppPath = 'ng-client/v1/dist/v1';
+// load env variables
 var port = process.env.PORT || 3333;
 
 // express routing
-app.use(express.static('public'));
+app.use(express.static(clientAppPath));
+
+
+app.get('/v1/*', (req, res) => {
+  res.sendFile(__dirname + '/' + clientAppPath + '/index.html');
+});
+
+app.all('/api/v1/*', (req,res)=>{
+  res.redirect('/v1/join-song');
+});
 
 // signaling
 io.on('connection', function (socket) {
